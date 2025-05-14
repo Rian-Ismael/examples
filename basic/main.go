@@ -1,25 +1,24 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 var db = make(map[string]string)
 
-func setupRouter() *gin.Engine {
+func main() {
 	// Disable Console Color
 	// gin.DisableConsoleColor()
-	r := gin.Default()
+	r2 := gin.Default()
 
 	// Ping test
-	r.GET("/ping", func(c *gin.Context) {
+	r2.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
 
 	// Get user value
-	r.GET("/user/:name", func(c *gin.Context) {
+	r2.GET("/user/:name", func(c *gin.Context) {
 		user := c.Params.ByName("name")
 		value, ok := db[user]
 		if ok {
@@ -36,7 +35,7 @@ func setupRouter() *gin.Engine {
 	//	  "foo":  "bar",
 	//	  "manu": "123",
 	//}))
-	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
+	authorized := r2.Group("/", gin.BasicAuth(gin.Accounts{
 		"foo":  "bar", // user:foo password:bar
 		"manu": "123", // user:manu password:123
 	}))
@@ -63,12 +62,7 @@ func setupRouter() *gin.Engine {
 			c.JSON(http.StatusOK, gin.H{"status": "ok"})
 		}
 	})
-
-	return r
-}
-
-func main() {
-	r := setupRouter()
+	r := r2
 	// Listen and Server in 0.0.0.0:8080
 	r.Run(":8080")
 }
