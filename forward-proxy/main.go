@@ -33,7 +33,11 @@ func ForwardMid(c *gin.Context) {
 				return
 			}
 			defer resp.Body.Close()
-			copyHeader(c.Writer.Header(), resp.Header)
+			for k, vv := range resp.Header {
+				for _, v2 := range vv {
+					c.Writer.Header().Add(k, v2)
+				}
+			}
 			c.Writer.WriteHeader(resp.StatusCode)
 			io.Copy(c.Writer, resp.Body)
 			c.Abort()
@@ -42,14 +46,6 @@ func ForwardMid(c *gin.Context) {
 	}
 
 	c.Next()
-}
-
-func copyHeader(dst, src http.Header) {
-	for k, vv := range src {
-		for _, v := range vv {
-			dst.Add(k, v)
-		}
-	}
 }
 
 func Reverse(c *gin.Context) {
